@@ -8,12 +8,16 @@ use cpal::Stream;
 use hound::WavWriter;
 
 #[tauri::command]
-pub fn start_recording(state: tauri::State<'_, StateGuard<State>>) -> () {
+pub fn start_recording(
+    path: String,
+    device: String,
+    state: tauri::State<'_, StateGuard<State>>,
+) -> () {
     let mut recorder = state.0.lock().unwrap();
 
-    recorder.start();
+    println!("{:?} recording, device {:?}", path, device);
 
-    println!("{:?} recording", recorder.is_recording);
+    recorder.start(path.clone(), device.clone());
 
     ()
 }
@@ -47,12 +51,13 @@ impl State {
         }
     }
 
-    pub fn start(&mut self) {
+    pub fn start(&mut self, path: String, device: String) {
         if self.is_recording {
             ()
         }
 
-        let (writer, stream) = crate::recorder::record(crate::recorder::Opt::default()).unwrap();
+        let (writer, stream) =
+            crate::recorder::record(crate::recorder::Opt { device, path }).unwrap();
 
         self.stream = Some(stream);
         self.writer = Some(writer);

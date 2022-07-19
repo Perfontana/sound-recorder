@@ -14,13 +14,15 @@ pub struct Opt {
     ))]
     jack: bool,
 
-    device: String,
+    pub device: String,
+    pub path: String,
 }
 
 impl Opt {
     pub fn default() -> Self {
         Opt {
             device: "default".to_string(),
+            path: "/".to_string(),
         }
     }
 }
@@ -28,29 +30,7 @@ impl Opt {
 pub fn record(
     opt: Opt,
 ) -> Result<(Arc<Mutex<Option<WavWriter<BufWriter<File>>>>>, Stream), anyhow::Error> {
-    // Conditionally compile with jack if the feature is specified.
-    #[cfg(all(
-        any(target_os = "linux", target_os = "dragonfly", target_os = "freebsd"),
-        feature = "jack"
-    ))]
-    // Manually check for flags. Can be passed through cargo with -- e.g.
-    // cargo run --release --example beep --features jack -- --jack
-    let host = if opt.jack {
-        cpal::host_from_id(cpal::available_hosts()
-            .into_iter()
-            .find(|id| *id == cpal::HostId::Jack)
-            .expect(
-                "make sure --features jack is specified. only works on OSes where jack is available",
-            )).expect("jack host unavailable")
-    } else {
-        cpal::default_host()
-    };
-
-    #[cfg(any(
-        not(any(target_os = "linux", target_os = "dragonfly", target_os = "freebsd")),
-        not(feature = "jack")
-    ))]
-    let host = cpal::default_host();
+    let host = crate::host::get_host();
 
     // Set up the input device and stream with the default input config.
     let device = if opt.device == "default" {
@@ -69,7 +49,7 @@ pub fn record(
     println!("Default input config: {:?}", config);
 
     // The WAV file we're recording to.
-    const PATH: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/recorded.wav");
+    let PATH: String = opt.path;
     let spec = wav_spec_from_config(&config);
     let writer = hound::WavWriter::create(PATH, spec)?;
     let writer = Arc::new(Mutex::new(Some(writer)));

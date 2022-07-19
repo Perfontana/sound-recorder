@@ -12,7 +12,16 @@
   },
   "tauri": {
     "allowlist": {
-      "all": true
+      "globalShortcut": {
+        "all": true
+      },
+      "dialog": {
+        "all": true
+      }
+    },
+    "systemTray": {
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": true
     },
     "bundle": {
       "active": true,
@@ -29,7 +38,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "com.super-recorder.dev",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
