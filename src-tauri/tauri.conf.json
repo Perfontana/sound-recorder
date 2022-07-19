@@ -17,6 +17,9 @@
       },
       "dialog": {
         "all": true
+      },
+      "window": {
+        "all": true
       }
     },
     "systemTray": {

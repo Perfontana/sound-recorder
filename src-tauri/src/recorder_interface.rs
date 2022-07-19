@@ -12,7 +12,14 @@ pub fn start_recording(
     path: String,
     device: String,
     state: tauri::State<'_, StateGuard<State>>,
+    app: tauri::AppHandle,
 ) -> () {
+    app.tray_handle()
+        .set_icon(tauri::Icon::Raw(
+            include_bytes!("../icons/favicon.ico").to_vec(),
+        ))
+        .unwrap();
+
     let mut recorder = state.0.lock().unwrap();
 
     println!("{:?} recording, device {:?}", path, device);
@@ -23,7 +30,13 @@ pub fn start_recording(
 }
 
 #[tauri::command]
-pub fn stop_recording(state: tauri::State<'_, StateGuard<State>>) -> () {
+pub fn stop_recording(state: tauri::State<'_, StateGuard<State>>, app: tauri::AppHandle) -> () {
+    app.tray_handle()
+        .set_icon(tauri::Icon::Raw(
+            include_bytes!("../icons/icon.ico").to_vec(),
+        ))
+        .unwrap();
+
     let mut recorder = state.0.lock().unwrap();
 
     recorder.stop();
