@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/tauri";
-import reactLogo from "./assets/react.svg";
+import {
+  isPermissionGranted,
+  requestPermission,
+  sendNotification,
+} from "@tauri-apps/api/notification";
 import "./App.css";
 
 let isRecording = false;
@@ -19,8 +23,6 @@ function SettingsWindow() {
   const [path, setPath] = useState("");
   const [devices, setDevices] = useState<{ name: string }[]>([]);
   const [selectedDevice, setSelectedDevice] = useState("default");
-  const [recordingIndicator, setRecordingIndicator] =
-    useState<WebviewWindow | null>(null);
 
   const [windowMessage, setMessage] = useState("");
 
@@ -34,17 +36,31 @@ function SettingsWindow() {
     loadInputDevices();
   }, []);
 
+  const notify = async (message: string) => {
+    let permissionGranted = await isPermissionGranted();
+    setMessage("PERMISSIONS" + permissionGranted.toString());
+    if (!permissionGranted) {
+      const permission = await requestPermission();
+      permissionGranted = permission === "granted";
+    }
+    if (permissionGranted) {
+      sendNotification({ title: "Recorder", body: message });
+    }
+  };
+
   const startRecording = async () => {
     isRecording = true;
     invoke("start_recording", {
       path: path + `/${Date.now()}.wav`,
       device: selectedDevice,
     });
+    notify("Recording started!");
   };
 
   const endRecording = async () => {
     isRecording = false;
     invoke("stop_recording");
+    notify("Recording ended!");
   };
 
   useEffect(() => {

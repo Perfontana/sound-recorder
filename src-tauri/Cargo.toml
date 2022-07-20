@@ -17,7 +17,7 @@ tauri-build = { version = "1.0.4", features = [] }
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.0.4", features = ["dialog-all", "global-shortcut-all", "icon-ico", "system-tray", "window-all"] }
+tauri = { version = "1.0.4", features = ["dialog-all", "global-shortcut-all", "icon-ico", "notification-all", "system-tray", "window-all"] }
 cpal = "0.13.5"
 hound = "3.4.0"
 anyhow = "1.0.58"
