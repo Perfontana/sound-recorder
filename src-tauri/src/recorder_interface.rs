@@ -22,8 +22,6 @@ pub fn start_recording(
 
     let mut recorder = state.0.lock().unwrap();
 
-    println!("{:?} recording, device {:?}", path, device);
-
     recorder.start(path.clone(), device.clone());
 
     ()
@@ -41,7 +39,6 @@ pub fn stop_recording(state: tauri::State<'_, StateGuard<State>>, app: tauri::Ap
 
     recorder.stop();
 
-    println!("{:?} recording", recorder.is_recording);
     ()
 }
 

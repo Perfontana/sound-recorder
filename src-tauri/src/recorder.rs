@@ -41,12 +41,9 @@ pub fn record(
     }
     .expect("failed to find input device");
 
-    println!("Input device: {}", device.name()?);
-
     let config = device
         .default_input_config()
         .expect("Failed to get default input config");
-    println!("Default input config: {:?}", config);
 
     // The WAV file we're recording to.
     let PATH: String = opt.path;
