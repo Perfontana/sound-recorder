@@ -17,5 +17,9 @@ export const FileSelector = ({
     onChange(filepath);
   };
 
-  return <button onClick={selectPath}>Change path</button>;
+  return (
+    <button onClick={selectPath}>
+      <img width={20} height={20} src="folder-icon.png" alt="Change folder" />
+    </button>
+  );
 };

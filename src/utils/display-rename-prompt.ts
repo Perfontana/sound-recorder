@@ -1,4 +1,4 @@
-import { appWindow, WebviewWindow } from "@tauri-apps/api/window";
+import { LogicalSize, WebviewWindow } from "@tauri-apps/api/window";
 import { sendEvent } from "./windowEvents";
 
 export const displayRenamePrompt = async (
@@ -6,8 +6,17 @@ export const displayRenamePrompt = async (
   filename: string,
   navigate: any
 ) => {
-  localStorage.setItem("filename", path + filename);
-  navigate("/file-rename-prompt");
-  await appWindow.setFocus();
-  await appWindow.setAlwaysOnTop(true);
+  sendEvent("log", "any", {
+    path: `/file-rename-prompt/${btoa(path)}/${btoa(filename)}`,
+  });
+
+  const window = new WebviewWindow("rename-prompt", {
+    url: `/file-rename-prompt/${btoa(path)}/${btoa(filename)}`,
+    decorations: false,
+    center: true,
+    focus: true,
+    alwaysOnTop: true,
+    height: 50,
+    width: 800,
+  });
 };

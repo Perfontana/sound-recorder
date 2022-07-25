@@ -7,24 +7,28 @@ import { displayRenamePrompt } from "./utils/display-rename-prompt";
 import { useKeyboardShortcut } from "./utils/use-keyboard-shortcut";
 import { useRecorder } from "./utils/use-recorder";
 
-function SettingsWindow({ setLastFile }: any) {
-  const [path, setPath] = useState("");
-  const [selectedDevice, setSelectedDevice] = useState("default");
+function SettingsWindow({
+  path,
+  setPath,
+  selectedDevice,
+  setSelectedDevice,
+}: any) {
   const navigate = useNavigate();
-  const [windowMessage, setMessage] = useState("");
 
   const [start, stop, isRecording, lastFilename] = useRecorder({
     path,
     device: selectedDevice,
   });
 
+  const startRecording = () => {
+    if (path) start();
+  };
+
   const stopWithRenamePrompt = async () => {
     await stop();
-    setLastFile({ path, filename: lastFilename });
     displayRenamePrompt(path, lastFilename, navigate);
   };
 
-  const setDevice = (device: string) => setSelectedDevice(device);
   const selectPath = (path: string | string[]) => {
     if (Array.isArray(path)) return;
 
@@ -33,25 +37,32 @@ function SettingsWindow({ setLastFile }: any) {
 
   useKeyboardShortcut("CommandOrControl+Q", () => {
     if (!isRecording) {
-      start();
+      startRecording();
     } else {
       stopWithRenamePrompt();
     }
   });
 
   return (
-    <div className="App">
-      <div>Selected folder for recordings: {path}</div>
-      <FileSelector
-        onChange={selectPath}
-        dialogOptions={{ directory: true, multiple: false }}
-      />
-      <DeviceSelector onChange={setDevice} />
+    <div className="settings">
+      <div className="settings-row">
+        <span className="settings-path">
+          {path ? path : "Please select folder"}
+        </span>
+        <FileSelector
+          onChange={selectPath}
+          dialogOptions={{ directory: true, multiple: false }}
+        />
+      </div>
+      <DeviceSelector onChange={setSelectedDevice} />
 
-      <button onClick={isRecording ? stopWithRenamePrompt : start}>
-        {isRecording ? "Stop" : "Start"} recording
+      <button onClick={isRecording ? stopWithRenamePrompt : startRecording}>
+        <img
+          width={20}
+          height={20}
+          src={isRecording ? "pause.png" : "start.png"}
+        />
       </button>
-      {windowMessage}
     </div>
   );
 }

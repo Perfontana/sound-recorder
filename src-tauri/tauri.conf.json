@@ -74,10 +74,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
-        "resizable": true,
-        "title": "RECORDDDERRR",
-        "width": 800
+        "height": 500,
+        "resizable": false,
+        "title": "Recorder settings",
+        "width": 300
       }
     ]
   }
